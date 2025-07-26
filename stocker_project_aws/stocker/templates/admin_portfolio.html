@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Portfolios - Admin - Stocker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="admin-page">
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="/admin/dashboard" class="logo">Stocker Admin</a>
+                <div class="nav-links">
+                    <a href="/admin/dashboard" class="nav-link">Dashboard</a>
+                    <a href="/admin/portfolio" class="nav-link active">All Portfolios</a>
+                    <a href="/admin/history" class="nav-link">All Trades</a>
+                    <a href="/admin/manage" class="nav-link">Manage Users</a>
+                    <a href="/logout" class="nav-link">Logout ({{ session.username }})</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">All User Portfolios</h2>
+                    <div class="text-secondary">Overview of all user holdings</div>
+                </div>
+
+                {% if portfolios %}
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Symbol</th>
+                                    <th>Shares</th>
+                                    <th>Avg Price</th>
+                                    <th>Current Price</th>
+                                    <th>Total Value</th>
+                                    <th>Gain/Loss</th>
+                                    <th>Cash Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for portfolio in portfolios %}
+                                    {% set current_price = stocks[portfolio[1]].price %}
+                                    {% set total_value = portfolio[2] * current_price %}
+                                    {% set gain_loss = (current_price - portfolio[3]) * portfolio[2] %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ portfolio[0] }}</strong>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <strong>{{ portfolio[1] }}</strong>
+                                            <div class="text-muted" style="font-size: 0.75rem;">
+                                                {{ stocks[portfolio[1]].name }}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ portfolio[2] }}</td>
+                                    <td>${{ "%.2f"|format(portfolio[3]) }}</td>
+                                    <td>${{ "%.2f"|format(current_price) }}</td>
+                                    <td>
+                                        <strong>${{ "%.2f"|format(total_value) }}</strong>
+                                    </td>
+                                    <td class="{% if gain_loss >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                        {{ "+" if gain_loss >= 0 else "" }}${{ "%.2f"|format(gain_loss) }}
+                                    </td>
+                                    <td>
+                                        <span class="text-muted">${{ "%.2f"|format(portfolio[4]) }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="grid grid-4 mt-4">
+                        {% set unique_users = portfolios | map(attribute=0) | unique | list %}
+                        <div class="stat-card">
+                            <div class="stat-value">{{ unique_users | length }}</div>
+                            <div class="stat-label">Active Investors</div>
+                        </div>
+                        {% set unique_stocks = portfolios | map(attribute=1) | unique | list %}
+                        <div class="stat-card">
+                            <div class="stat-value">{{ unique_stocks | length }}</div>
+                            <div class="stat-label">Stocks Held</div>
+                        </div>
+                        {% set total_shares = portfolios | sum(attribute=2) %}
+                        <div class="stat-card">
+                            <div class="stat-value">{{ total_shares }}</div>
+                            <div class="stat-label">Total Shares</div>
+                        </div>
+                        {% set total_portfolio_value = portfolios | sum(attribute=4) %}
+                        <div class="stat-card">
+                            <div class="stat-value">${{ "%.0f"|format(total_portfolio_value) }}</div>
+                            <div class="stat-label">Total Cash</div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="text-center p-4">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+                        <h3>No Portfolio Data</h3>
+                        <p class="text-secondary">No users have created portfolios yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if portfolios %}
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Portfolio Summary by User</h3>
+                </div>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Holdings Count</th>
+                                <th>Total Portfolio Value</th>
+                                <th>Cash Balance</th>
+                                <th>Total Account Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in unique_users %}
+                                {% set user_portfolios = portfolios | selectattr(0, 'equalto', user) | list %}
+                                {% set user_portfolio_value = 0 %}
+                                {% for item in user_portfolios %}
+                                    {% set user_portfolio_value = user_portfolio_value + (item[2] * stocks[item[1]].price) %}
+                                {% endfor %}
+                                {% set user_cash = user_portfolios[0][4] if user_portfolios else 0 %}
+                            <tr>
+                                <td><strong>{{ user }}</strong></td>
+                                <td>{{ user_portfolios | length }}</td>
+                                <td>${{ "%.2f"|format(user_portfolio_value) }}</td>
+                                <td>${{ "%.2f"|format(user_cash) }}</td>
+                                <td>
+                                    <strong>${{ "%.2f"|format(user_portfolio_value + user_cash) }}</strong>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

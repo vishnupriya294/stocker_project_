@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Stocker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body data-user-id="{{ session.user_id }}">
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="/dashboard" class="logo">Stocker</a>
+                <div class="nav-links">
+                    <a href="/dashboard" class="nav-link active">Dashboard</a>
+                    <a href="/portfolio" class="nav-link">Portfolio</a>
+                    <a href="/history" class="nav-link">History</a>
+                    <a href="/logout" class="nav-link">Logout ({{ session.username }})</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="stats-grid mb-4">
+                <div class="stat-card">
+                    <div class="stat-value">${{ "%.2f"|format(balance) }}</div>
+                    <div class="stat-label">Available Balance</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="portfolio-value">${{ "%.2f"|format(portfolio_value) }}</div>
+                    <div class="stat-label">Portfolio Value</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${{ "%.2f"|format(balance + portfolio_value) }}</div>
+                    <div class="stat-label">Total Value</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ stocks|length }}</div>
+                    <div class="stat-label">Available Stocks</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Stock Market</h2>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); font-size: 0.875rem;">
+                        <div class="loading"></div>
+                        Live Updates
+                    </div>
+                </div>
+
+                <div class="grid grid-4">
+                    {% for symbol, stock in stocks.items() %}
+                    <div class="stock-card" data-symbol="{{ symbol }}">
+                        <div class="stock-symbol">{{ symbol }}</div>
+                        <div class="stock-name">{{ stock.name }}</div>
+                        <div class="stock-price">${{ "%.2f"|format(stock.price) }}</div>
+                        <div class="stock-change {% if stock.change >= 0 %}positive{% else %}negative{% endif %}">
+                            {{ "+" if stock.change >= 0 else "" }}${{ "%.2f"|format(stock.change) }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Quick Actions</h2>
+                </div>
+                <div class="grid grid-3">
+                    <a href="/portfolio" class="btn btn-secondary btn-lg">
+                        📊 View Portfolio
+                    </a>
+                    <a href="/history" class="btn btn-secondary btn-lg">
+                        📈 Trade History
+                    </a>
+                    <div>
+                        <select id="quick-trade-select" class="form-input" onchange="quickTrade(this.value)">
+                            <option value="">Select Stock to Trade</option>
+                            {% for symbol, stock in stocks.items() %}
+                            <option value="{{ symbol }}">{{ symbol }} - {{ stock.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            {% if balance < 1000 %}
+            <div class="alert alert-warning">
+                <strong>Low Balance:</strong> Your account balance is getting low. Consider selling some positions to free up funds for new trades.
+            </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        function quickTrade(symbol) {
+            if (symbol) {
+                window.location.href = `/trade/${symbol}`;
+            }
+        }
+    </script>
+</body>
+</html>

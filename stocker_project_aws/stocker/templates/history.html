@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade History - Stocker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="/dashboard" class="logo">Stocker</a>
+                <div class="nav-links">
+                    <a href="/dashboard" class="nav-link">Dashboard</a>
+                    <a href="/portfolio" class="nav-link">Portfolio</a>
+                    <a href="/history" class="nav-link active">History</a>
+                    <a href="/logout" class="nav-link">Logout ({{ session.username }})</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Trade History</h2>
+                    <div class="text-secondary">Your complete trading activity</div>
+                </div>
+
+                {% if trades %}
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date & Time</th>
+                                    <th>Symbol</th>
+                                    <th>Action</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for trade in trades %}
+                                <tr>
+                                    <td>
+                                        <div style="font-size: 0.875rem;">
+                                            <div>{{ trade[5][:10] }}</div>
+                                            <div class="text-muted">{{ trade[5][11:19] }}</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>{{ trade[0] }}</strong>
+                                    </td>
+                                    <td>
+                                        <span class="btn btn-sm {% if trade[1] == 'buy' %}btn-success{% else %}btn-danger{% endif %}">
+                                            {{ trade[1].upper() }}
+                                        </span>
+                                    </td>
+                                    <td>{{ trade[2] }}</td>
+                                    <td>${{ "%.2f"|format(trade[3]) }}</td>
+                                    <td>
+                                        <strong>${{ "%.2f"|format(trade[4]) }}</strong>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="grid grid-3 mt-4">
+                        <div class="stat-card">
+                            <div class="stat-value">{{ trades|length }}</div>
+                            <div class="stat-label">Total Trades</div>
+                        </div>
+                        <div class="stat-card">
+                            {% set buy_trades = trades | selectattr('1', 'equalto', 'buy') | list %}
+                            <div class="stat-value">{{ buy_trades|length }}</div>
+                            <div class="stat-label">Buy Orders</div>
+                        </div>
+                        <div class="stat-card">
+                            {% set sell_trades = trades | selectattr('1', 'equalto', 'sell') | list %}
+                            <div class="stat-value">{{ sell_trades|length }}</div>
+                            <div class="stat-label">Sell Orders</div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="text-center p-4">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📈</div>
+                        <h3>No Trading History</h3>
+                        <p class="text-secondary mb-4">You haven't made any trades yet. Start trading to see your history here.</p>
+                        <a href="/dashboard" class="btn btn-primary">Start Trading</a>
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if trades %}
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Recent Activity</h3>
+                </div>
+                <div>
+                    {% for trade in trades[:5] %}
+                    <div class="portfolio-item">
+                        <div class="portfolio-info">
+                            <div class="portfolio-symbol">
+                                {{ trade[1].upper() }} {{ trade[0] }}
+                            </div>
+                            <div class="portfolio-details">
+                                {{ trade[2] }} shares at ${{ "%.2f"|format(trade[3]) }} each
+                            </div>
+                        </div>
+                        <div class="portfolio-value">
+                            <div class="portfolio-price">${{ "%.2f"|format(trade[4]) }}</div>
+                            <div class="text-muted" style="font-size: 0.75rem;">
+                                {{ trade[5][:10] }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

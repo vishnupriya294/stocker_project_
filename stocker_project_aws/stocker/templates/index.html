@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stocker - Professional Stock Trading Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="/" class="logo">Stocker</a>
+                <div class="nav-links">
+                    <a href="/" class="nav-link active">Home</a>
+                    <a href="/signup" class="nav-link">Sign Up</a>
+                    <a href="/login" class="nav-link">Login</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <section class="hero">
+                <h1 class="hero-title">Professional Stock Trading Platform</h1>
+                <p class="hero-subtitle">
+                    Trade stocks with confidence using our advanced platform. Real-time data, 
+                    professional tools, and secure transactions for modern investors.
+                </p>
+                <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+                    <a href="/signup" class="btn btn-primary btn-lg">Get Started</a>
+                    <a href="/login" class="btn btn-secondary btn-lg">Login</a>
+                </div>
+            </section>
+
+            <section class="features">
+                <div class="feature">
+                    <div class="feature-icon">📈</div>
+                    <h3 class="feature-title">Real-Time Trading</h3>
+                    <p class="feature-description">
+                        Execute trades instantly with live market data and real-time price updates 
+                        across 25+ popular stocks.
+                    </p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">💼</div>
+                    <h3 class="feature-title">Portfolio Management</h3>
+                    <p class="feature-description">
+                        Track your investments with comprehensive portfolio analytics, 
+                        performance metrics, and detailed trade history.
+                    </p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">Secure Platform</h3>
+                    <p class="feature-description">
+                        Your investments are protected with enterprise-grade security, 
+                        encrypted transactions, and secure user authentication.
+                    </p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Professional Tools</h3>
+                    <p class="feature-description">
+                        Access professional-grade trading tools with intuitive interfaces 
+                        designed for both beginners and experienced traders.
+                    </p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Lightning Fast</h3>
+                    <p class="feature-description">
+                        Experience ultra-fast trade execution with our optimized platform 
+                        built for high-performance trading operations.
+                    </p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📱</div>
+                    <h3 class="feature-title">Responsive Design</h3>
+                    <p class="feature-description">
+                        Trade from anywhere with our fully responsive platform that works 
+                        seamlessly across desktop, tablet, and mobile devices.
+                    </p>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Why Choose Stocker?</h2>
+                </div>
+                <div class="grid grid-2">
+                    <div>
+                        <h4>Professional Features</h4>
+                        <ul style="color: var(--text-secondary); margin-top: 0.5rem;">
+                            <li>Real-time stock price updates</li>
+                            <li>Comprehensive portfolio tracking</li>
+                            <li>Detailed trade history and analytics</li>
+                            <li>Advanced user and admin management</li>
+                            <li>Email notifications for trade confirmations</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Technology Stack</h4>
+                        <ul style="color: var(--text-secondary); margin-top: 0.5rem;">
+                            <li>Flask-powered backend with SQLite/DynamoDB</li>
+                            <li>Modern responsive web design</li>
+                            <li>AWS integration with SNS notifications</li>
+                            <li>Secure password hashing and authentication</li>
+                            <li>Real-time data updates with JavaScript</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Ready to Start Trading?</h2>
+                </div>
+                <div class="text-center">
+                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                        Join thousands of traders who trust Stocker for their investment needs. 
+                        Get started with a free account and $10,000 in virtual funds to begin trading immediately.
+                    </p>
+                    <a href="/signup" class="btn btn-primary btn-lg">Create Your Account</a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
